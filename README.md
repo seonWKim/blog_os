@@ -129,5 +129,21 @@
               interrupt
             - SIMD state is commonly very large (512 ~ 1600 bytes)
         - `x86_64`require SIMD registers by default, to solve this problem, we add `soft-float` feature, which
-          emulates all floating point operations through software functions based on normal integers 
-        - 
+          emulates all floating point operations through software functions based on normal integers
+
+- Printing to Screen
+    - the easiest way to print text to the screen is the VGA text buffer
+    - it's a special memory area mapped to the VGA hardware that contains the contents displayed on the screen
+
+- Rust `unsafe` allows
+    1. Dereferencing raw pointers
+    2. Calling unsafe functions or methods
+    3. Accessing or modifying mutable static variables
+    4. Implement unsafe traits
+    5. Accessing union fields
+- Rust's `Union`
+    - a data structure that can store different types in the same memory location
+    - allows you to define multiple fields but only one of them can be used at a time
+    - accessing the fields of a union requires an `unsafe` block because it's up to the programmer to ensure
+      that the correct field is accessed, as the rust compiler can't guarantee the safety of such operation 
+    - 
