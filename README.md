@@ -1,0 +1,16 @@
+- To write an OS, we need code that doesn't depend on any OS features
+    - e.g. threads, files, heap memory, network, random numbers, standard output that requires any other
+      features requiring OS abstractions or specific hardware
+- What can we benefit from Rust when writing OS?
+    - Surely, not the OS related features but, we still have
+        - iterators
+        - closures
+        - pattern matching
+        - option, result
+        - string formatting
+        - ownership
+    - We need "freestanding" or "bare-metal" executable which doesn't depend on the underlying OS
+- By default, Rust crates link the standard lib, which depends on the OS for features such as 
+  - threads, files, or networking
+  - `libc`, which is the C standard library, which closely interacts with OS services 
+  - 
