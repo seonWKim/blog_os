@@ -38,16 +38,54 @@
       runtime zero), which sets up the environment for a C application. The C runtime then invokes the entry
       point of the Rust runtime, which is marked by the `start` language item
 
-- Linker 
-  - a program that combines the generated code into an executable 
+- Linker
+    - a program that combines the generated code into an executable
 
-- Rust target triple 
-  - A string that specifies the target architecture, vendor, OS and environment for which the code is being compiled 
-  - Used by the rust compiler to generate code that is compatible with the specified target 
-  - e.g. `x86_64-unknown-linux-gnu`
+- Rust target triple
+    - A string that specifies the target architecture, vendor, OS and environment for which the code is being
+      compiled
+    - Used by the rust compiler to generate code that is compatible with the specified target
+    - e.g. `x86_64-unknown-linux-gnu`
 
-- Rust's cross compile 
-  - The process of compiling code on one platform to run on another platform 
-    - useful when the target platform is different from the host platform 
-      - e.g. compiling code on the MacOS for Linux or Windows 
-    - 
+- Rust's cross compile
+    - The process of compiling code on one platform to run on another platform
+        - useful when the target platform is different from the host platform
+            - e.g. compiling code on the MacOS for Linux or Windows
+        -
+
+- The Boot process
+    - When you turn on your computer
+        1. Executes firmware code that is stored in motherboard ROM
+            - Performs a power-on self-test, and detect available RAM, and pre-initializes the CPU and hardware
+        2. Looks for a bootable disk and starts booting the OS
+    - Firmware standards
+        1. BIOS(Basic Input/Output System)
+            - old, outdated but it's simple and well supported on any x86 machine
+        2. UEFI(Unified Extensible Firmware Interface)
+            - modern and has much more features, but is more complex to set up
+    - How BIOS Boot works
+        1. Turn on your computer
+        2. Loads the BIOS from some special flash memory located on the motherboard
+            - BIOS runs self-test and initialization routines of the hardware
+            - Looks for bootable disks -> Pass control to the bootloader if found
+        3. Bootloader
+            - Bootloader is a 512-byte portion of executable code stored at the disk's beginning
+            - Most bootloaders are larger than 512 bytes, so they are commonly split into a small first page,
+              which fits into 512 bytes, and a second stage, which is subsequently loaded by the first page
+            - Determines the location of the kernel image on the disk and load it into memory
+            - Switches the CPU from the 16-bit real mode to the 32-bit protected mode, and then to the 64-bit
+              long mode(64-bit registers and the complete main memory are available)
+  - Real mode 
+    - operating on a 16-bit environment, allowing access to only 1MB of memory
+    - no memory protection or multitasking; all programs can access any part of the memory 
+  - Protected mode 
+    - allows access to more than 1MB of memory 
+    - supports memory protection, paging and hardware-level multitasking 
+    - each program runs in its own protected memory space, preventing them from interfering with each other 
+  - Long mode 
+    - allows access to a 64-bit address space, enabling the use of more than 4GB of RAM 
+    - includes all the features of protected mode but extends them to a 64 bit 
+  - Multiboot standard 
+    - No more custom bootloaders -> open standard 
+    - defines an interface between the bootloader and the OS 
+    - Any MULTIBOOT-COMPLIANT bootloaders can load MULTIBOOT-COMPATIBLE OS
