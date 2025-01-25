@@ -4,3 +4,10 @@ version = "0.1.0"
 edition = "2018"
 
 [dependencies]
+
+# Let's prevent default stack unwinding when panic occurs, rather let it abort
+[profile.dev]
+panic = "abort"
+
+[profile.release]
+panic = "abort"
