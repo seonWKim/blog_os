@@ -105,12 +105,29 @@
         - if you wish to use work-in-progress feature, you can, but you have to use a nightly release of Rust
           and annotate your source code with the appropriate flag to opt in
     - By default, you will have stable Rust installed
-      - you can override the rust settings by using `rustup override set nightly` ->
-      - check which version of rust is being used by `rustup -V`
-    - By the way, what is `rustup`? 
-      - toolchain installer for the Rust language 
-      - features 
-        - installing rust: install the latest stable, beta or nightly versions of rust  
-        - toolchain management: switch between different versions of rust toolchains  
-        - component management: install additional components like `rustfmt`, `clippy` and more 
-        - cross-compilation: add and manage target platforms for cross-compiling 
+        - you can override the rust settings by using `rustup override set nightly` ->
+        - check which version of rust is being used by `rustup -V`
+    - By the way, what is `rustup`?
+        - toolchain installer for the Rust language
+        - features
+            - installing rust: install the latest stable, beta or nightly versions of rust
+            - toolchain management: switch between different versions of rust toolchains
+            - component management: install additional components like `rustfmt`, `clippy` and more
+            - cross-compilation: add and manage target platforms for cross-compiling
+
+- Target specification
+    - target triple: `CPU architecture` + `vendor` + `ABI`
+        - e.g. `arm-linux-androidabi`, `wasm32-unknown-unknown`
+    - Rust allows us to define our own target through a JSON file
+        - Information that are required by the LLVM to generate code for that platform
+
+    - `mmx`, `sse` features support SIMD(Single Instruction Multiple Data) instructions
+        - using large SIMD registers in OS kernels leads to performance problems
+        - the reason is that the kernel needs to restore all registers to their original state before continuing
+          an interrupted program
+            - kernel has to save the complete SIMD state in main memory on each system call or hardware
+              interrupt
+            - SIMD state is commonly very large (512 ~ 1600 bytes)
+        - `x86_64`require SIMD registers by default, to solve this problem, we add `soft-float` feature, which
+          emulates all floating point operations through software functions based on normal integers 
+        - 
