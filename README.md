@@ -75,17 +75,42 @@
             - Determines the location of the kernel image on the disk and load it into memory
             - Switches the CPU from the 16-bit real mode to the 32-bit protected mode, and then to the 64-bit
               long mode(64-bit registers and the complete main memory are available)
-  - Real mode 
-    - operating on a 16-bit environment, allowing access to only 1MB of memory
-    - no memory protection or multitasking; all programs can access any part of the memory 
-  - Protected mode 
-    - allows access to more than 1MB of memory 
-    - supports memory protection, paging and hardware-level multitasking 
-    - each program runs in its own protected memory space, preventing them from interfering with each other 
-  - Long mode 
-    - allows access to a 64-bit address space, enabling the use of more than 4GB of RAM 
-    - includes all the features of protected mode but extends them to a 64 bit 
-  - Multiboot standard 
-    - No more custom bootloaders -> open standard 
-    - defines an interface between the bootloader and the OS 
-    - Any MULTIBOOT-COMPLIANT bootloaders can load MULTIBOOT-COMPATIBLE OS
+    - Real mode
+        - operating on a 16-bit environment, allowing access to only 1MB of memory
+        - no memory protection or multitasking; all programs can access any part of the memory
+    - Protected mode
+        - allows access to more than 1MB of memory
+        - supports memory protection, paging and hardware-level multitasking
+        - each program runs in its own protected memory space, preventing them from interfering with each other
+    - Long mode
+        - allows access to a 64-bit address space, enabling the use of more than 4GB of RAM
+        - includes all the features of protected mode but extends them to a 64 bit
+    - Multiboot standard
+        - No more custom bootloaders -> open standard
+        - defines an interface between the bootloader and the OS
+        - Any MULTIBOOT-COMPLIANT bootloaders can load MULTIBOOT-COMPATIBLE OS
+
+- Rust release channels
+    - Nightly: experimental new features
+        - each night, a new nightly version of Rust is produced
+    - Beta: experimental new features
+        - every six weeks, `beta` branch of the Rust repository branches off from the `master` branch used by
+          nightly
+        - `beta` branch branches off from the nightly branch
+    - Stable: mostly used
+        - six weeks after the first `beta` was created, it's time for a stable release. `stable` branch is
+          produced from the `beta` branch
+    - Unstable features
+        - rust uses a technique called `feature flags` to determine what features are enabled in a given release
+        - if you wish to use work-in-progress feature, you can, but you have to use a nightly release of Rust
+          and annotate your source code with the appropriate flag to opt in
+    - By default, you will have stable Rust installed
+      - you can override the rust settings by using `rustup override set nightly` ->
+      - check which version of rust is being used by `rustup -V`
+    - By the way, what is `rustup`? 
+      - toolchain installer for the Rust language 
+      - features 
+        - installing rust: install the latest stable, beta or nightly versions of rust  
+        - toolchain management: switch between different versions of rust toolchains  
+        - component management: install additional components like `rustfmt`, `clippy` and more 
+        - cross-compilation: add and manage target platforms for cross-compiling 
