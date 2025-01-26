@@ -269,4 +269,13 @@
 - conditional compilation 
   - `#[cfg]`
   - allows you to compile code based on a flag passed to the compiler 
-  - 
+  
+- I/O ports 
+  - How does CPU communicate with peripherals? 
+    - Memory Mapped I/O
+      - e.g. VGA Text Buffer 
+    - Port Mapped I/O 
+      - Uses a separate I/O bus for communication 
+      - Each connected peripheral has one or more port numbers 
+      - There are special CPU instructions called `in` and `out`, which take a port number and a data byte
+      - 
