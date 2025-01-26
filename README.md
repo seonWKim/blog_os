@@ -244,14 +244,24 @@
             - 1 code unit(2 bytes) for characters in the BMP(Basic Multilingual Plane), which includes most
               common characters
             - 2 code unit(4 bytes) for characters outside the BMP, known as supplementary characters
-        - Not backward compatible with ASCII 
+        - Not backward compatible with ASCII
 
 - `volatile` crate
-  - Used to ensure that reads and writes to a memory location are not optimized away by the compiler 
-  - Reasons for using it 
-    - Prevent compiler optimization
-      - compiler might optimize away reads and writes to memory locations that it deems unnecessary 
-    - Memory Mapped I/O 
-      - ensuring that every read and writes are performed 
-    - Concurrency 
-      - ensuring that changes are visible to different threads or interrupt handlers 
+    - Used to ensure that reads and writes to a memory location are not optimized away by the compiler
+    - Reasons for using it
+        - Prevent compiler optimization
+            - compiler might optimize away reads and writes to memory locations that it deems unnecessary
+        - Memory Mapped I/O
+            - ensuring that every read and writes are performed
+        - Concurrency
+            - ensuring that changes are visible to different threads or interrupt handlers
+
+- `static`s in rust
+    - Are initialized at compile time, in contrast to normal variables that are initialized at runtime
+        - Rust's `const evaluator` evaluates such initialization expression
+    - `lazy_static` to the rescue
+        - instead of computing its value at compiler time, the `static` lazily initializes itself when accessed
+          for the first time, so that the initialization happens at runtime 
+
+- `write!` macro 
+  - used for formatted output, but it writes to a specified writer instead of standard output 
