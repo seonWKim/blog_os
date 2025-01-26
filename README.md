@@ -177,6 +177,24 @@
     - by default, Rust enums are represented using the smallest integer type that can fit all of their variants.
       This means that the size of the enum depends on the number of variants it has
         - e.g. 1 ~ 256 variants -> u8, 257 ~ 65,536 variants -> u16 ...
+- `repr(transparent)`
+    - an attribute in rust used to specify that a struct should have the same memory layout as its single
+      non-zero-sized field
+    - useful for creating newtypes that are guaranteed to have the same representation as the underlying type(
+      which can be important for FFI and other low-level programming tasks)
+    - ```rust
+      #[repr(transparent)]
+
+        struct Wrapper(u32);
+
+        fn main() {
+        let x = Wrapper(42);
+        let y: u32 = unsafe { std::mem::transmute(x) };
+        println!("{}", y); // Outputs: 42
+        }
+      ```
+        - the `Wrapper` has the same memory layout as the u32, allowing safe transmutation between the two types 
+        - `transmute` allows you to reinterpret the bits of a value as another type 
 
 - Derive macros
     - `#[derive(Debug, Clone, Copy, PartialEq, Eq)]`
@@ -197,9 +215,9 @@
                   `NaN` values, which are not equal to themselves, violating the reflexive property
         - Eq
             - indicates a type has a total equivalence relation
-              - total equivalence should satisfy below conditions 
-                - reflexive: x == x 
-                - symmetric: if (x == y) then y == x 
-                - transitive: if (x == y && y == z) then x == z  
+                - total equivalence should satisfy below conditions
+                    - reflexive: x == x
+                    - symmetric: if (x == y) then y == x
+                    - transitive: if (x == y && y == z) then x == z
             - can only be derived if all fields of the type implements `Eq`
             - requires `PartialEq` to be implemented
