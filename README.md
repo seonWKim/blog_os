@@ -170,4 +170,36 @@
       `store`), treating device drivers as if they were like regular memory locations
 - Port Mapped I/O
     - A method used to perform input/output operations between the CPU and peripheral devices by using a
-      separate address space for I/O operations 
+      separate address space for I/O operations
+
+- `repr(u8)`
+    - specifies that the Rust enum should be represented as an 8-bit unsigned integer
+    - by default, Rust enums are represented using the smallest integer type that can fit all of their variants.
+      This means that the size of the enum depends on the number of variants it has
+        - e.g. 1 ~ 256 variants -> u8, 257 ~ 65,536 variants -> u16 ...
+
+- Derive macros
+    - `#[derive(Debug, Clone, Copy, PartialEq, Eq)]`
+    - Called derive macros because it automatically generates implementations of certain traits for the
+      annotated type
+    - Examples
+        - Debug
+            - allows for formatting a value using the `{:?` formatter
+        - Clone
+            - deep copy
+        - Copy
+            - shallow copy(copying bits)
+        - PartialEq
+            - allows for comparison of values using `==` and `!=`
+            - can only be derived if all fields of the type implements `PartialEq`
+            - does not require the full properties of a `total equivalence` relation
+                - e.g. floating point numbers implement `PartialEq` but not `Eq` because they can represent
+                  `NaN` values, which are not equal to themselves, violating the reflexive property
+        - Eq
+            - indicates a type has a total equivalence relation
+              - total equivalence should satisfy below conditions 
+                - reflexive: x == x 
+                - symmetric: if (x == y) then y == x 
+                - transitive: if (x == y && y == z) then x == z  
+            - can only be derived if all fields of the type implements `Eq`
+            - requires `PartialEq` to be implemented
