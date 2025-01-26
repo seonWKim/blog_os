@@ -6,7 +6,7 @@
 #![test_runner(crate::test_runner)]
 #![reexport_test_harness_main = "test_main"]
 
-mod serial;
+pub mod serial;
 pub mod vga_buffer;
 
 use core::panic::PanicInfo;
