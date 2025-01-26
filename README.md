@@ -282,4 +282,16 @@
 - Serial ports 
   - A communication interface through which data is transferred one bit at a time over a single communication line 
   - Commonly used for communication between computers and peripheral devices 
-  - 
+
+- Integration test in Rust 
+  - putting integration test into tests directory is convention in rust
+  - all integration tests are their own executables and completely separate from `main.rs`
+
+- `main.rs` and `lib.rs` in rust 
+  - `main.rs`
+    - defines the entry point for a binary crate 
+    - used to create executable programs 
+    - contains `main` function 
+  - `lib.rs`
+    - defines the entry point for a library crate 
+    - used to create reusable libraries that can be included in other projects 
