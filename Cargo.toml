@@ -14,7 +14,7 @@ features = ["spin_no_std"]
 
 # Let's prevent default stack unwinding when panic occurs, rather let it abort
 [profile.dev]
-panic = "abort"
+# panic = "abort"
 
 [profile.release]
-panic = "abort"
+# panic = "abort"

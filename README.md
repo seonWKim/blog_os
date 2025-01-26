@@ -265,3 +265,8 @@
 
 - `write!` macro 
   - used for formatted output, but it writes to a specified writer instead of standard output 
+
+- conditional compilation 
+  - `#[cfg]`
+  - allows you to compile code based on a flag passed to the compiler 
+  - 
