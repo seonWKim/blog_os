@@ -145,5 +145,29 @@
     - a data structure that can store different types in the same memory location
     - allows you to define multiple fields but only one of them can be used at a time
     - accessing the fields of a union requires an `unsafe` block because it's up to the programmer to ensure
-      that the correct field is accessed, as the rust compiler can't guarantee the safety of such operation 
-    - 
+      that the correct field is accessed, as the rust compiler can't guarantee the safety of such operation
+
+- VGA
+    - VGA text buffer is a two-dimensional array with typically 25 rows and 80 columns, which is directly
+      rendered to the screen
+    - VGA text buffer is accessible via memory-mapped I/O to the address `0xb8000`
+        - this means that reads and writes to that address don't access the RAM but directly access the text
+          buffer on the VGA hardware
+
+- Memory Mapped I/O
+    - A method used to perform input/output operations between the CPU and peripheral devices by mapping device
+      registers into the same address space as the program memory
+        - Device registers
+            - Special memory locations used by the CPU to control and communicate with hardware devices
+            - Registers are typically mapped to the system's address space, allowing the CPU to read from and
+              write to them using standard memory instructions
+            - Each register usually has a specific function eg. controlling the device, reporting its status, or
+              transferring data
+                - Control: used to send commands to the device
+                - Status: used to read the current status of the device
+                - Data: used to transfer data to and from the device
+    - Allows the CPU to interact with hardware devices using the standard memory instructions(e.g. `load`,
+      `store`), treating device drivers as if they were like regular memory locations
+- Port Mapped I/O
+    - A method used to perform input/output operations between the CPU and peripheral devices by using a
+      separate address space for I/O operations 
