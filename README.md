@@ -193,8 +193,13 @@
         println!("{}", y); // Outputs: 42
         }
       ```
-        - the `Wrapper` has the same memory layout as the u32, allowing safe transmutation between the two types 
-        - `transmute` allows you to reinterpret the bits of a value as another type 
+        - the `Wrapper` has the same memory layout as the u32, allowing safe transmutation between the two types
+        - `transmute` allows you to reinterpret the bits of a value as another type
+- `repr(C)`
+    - specifies that a struct or enum should use the C programming language's memory layout
+    - important when interoperability with C code and for ensuring a predictable memory layout, which can be
+      crucial for low-level programming tasks
+        - by default, Rust's struct's field ordering is undefined
 
 - Derive macros
     - `#[derive(Debug, Clone, Copy, PartialEq, Eq)]`
@@ -221,3 +226,22 @@
                     - transitive: if (x == y && y == z) then x == z
             - can only be derived if all fields of the type implements `Eq`
             - requires `PartialEq` to be implemented
+
+- ASCII, Utf-8, Utf-16
+    - ASCII
+        - 7-bit character encoding standard(128)
+        - each character is represented by a single byte, with the most significant bit always set to 0
+    - UTF-8(Unicode Transformation Format - 8 bit)
+        - A variable length character encoding for unicode
+        - Able to represent every character in the Unicode character set, which includes characters from almost
+          all written languages
+        - UTF-8 is backward compatible with ASCII, meaning any valid ASCII text is also valid UTF-8 text
+        - How encoding works
+            - 1 byte for ASCII characters
+            - 2 ~ 4 bytes for other characters
+    - UTF-16(Unicode Transformation Format - 16 bit)
+        - How encoding works
+            - 1 code unit(2 bytes) for characters in the BMP(Basic Multilingual Plane), which includes most
+              common characters
+            - 2 code unit(4 bytes) for characters outside the BMP, known as supplementary characters
+        - Not backward compatible with ASCII 
