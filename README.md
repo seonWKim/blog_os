@@ -245,3 +245,13 @@
               common characters
             - 2 code unit(4 bytes) for characters outside the BMP, known as supplementary characters
         - Not backward compatible with ASCII 
+
+- `volatile` crate
+  - Used to ensure that reads and writes to a memory location are not optimized away by the compiler 
+  - Reasons for using it 
+    - Prevent compiler optimization
+      - compiler might optimize away reads and writes to memory locations that it deems unnecessary 
+    - Memory Mapped I/O 
+      - ensuring that every read and writes are performed 
+    - Concurrency 
+      - ensuring that changes are visible to different threads or interrupt handlers 
