@@ -261,37 +261,44 @@
         - Rust's `const evaluator` evaluates such initialization expression
     - `lazy_static` to the rescue
         - instead of computing its value at compiler time, the `static` lazily initializes itself when accessed
-          for the first time, so that the initialization happens at runtime 
+          for the first time, so that the initialization happens at runtime
 
-- `write!` macro 
-  - used for formatted output, but it writes to a specified writer instead of standard output 
+- `write!` macro
+    - used for formatted output, but it writes to a specified writer instead of standard output
 
-- conditional compilation 
-  - `#[cfg]`
-  - allows you to compile code based on a flag passed to the compiler 
-  
-- I/O ports 
-  - How does CPU communicate with peripherals? 
-    - Memory Mapped I/O
-      - e.g. VGA Text Buffer 
-    - Port Mapped I/O 
-      - Uses a separate I/O bus for communication 
-      - Each connected peripheral has one or more port numbers 
-      - There are special CPU instructions called `in` and `out`, which take a port number and a data byte
-      
-- Serial ports 
-  - A communication interface through which data is transferred one bit at a time over a single communication line 
-  - Commonly used for communication between computers and peripheral devices 
+- conditional compilation
+    - `#[cfg]`
+    - allows you to compile code based on a flag passed to the compiler
 
-- Integration test in Rust 
-  - putting integration test into tests directory is convention in rust
-  - all integration tests are their own executables and completely separate from `main.rs`
+- I/O ports
+    - How does CPU communicate with peripherals?
+        - Memory Mapped I/O
+            - e.g. VGA Text Buffer
+        - Port Mapped I/O
+            - Uses a separate I/O bus for communication
+            - Each connected peripheral has one or more port numbers
+            - There are special CPU instructions called `in` and `out`, which take a port number and a data byte
 
-- `main.rs` and `lib.rs` in rust 
-  - `main.rs`
-    - defines the entry point for a binary crate 
-    - used to create executable programs 
-    - contains `main` function 
-  - `lib.rs`
-    - defines the entry point for a library crate 
-    - used to create reusable libraries that can be included in other projects 
+- Serial ports
+    - A communication interface through which data is transferred one bit at a time over a single communication
+      line
+    - Commonly used for communication between computers and peripheral devices
+
+- Integration test in Rust
+    - putting integration test into tests directory is convention in rust
+    - all integration tests are their own executables and completely separate from `main.rs`
+
+- `main.rs` and `lib.rs` in rust
+    - `main.rs`
+        - defines the entry point for a binary crate
+        - used to create executable programs
+        - contains `main` function
+    - `lib.rs`
+        - defines the entry point for a library crate
+        - used to create reusable libraries that can be included in other projects
+
+- test `harness` option
+    - definition: a set of straps and fittings by which a horse or other draft animal is fastened to a cart,
+      plow, etc
+    - specifies whether to use the default test harness for a test
+        - when set to `false`, the test will not use the default test harness provided by rust
