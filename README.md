@@ -446,3 +446,8 @@
       instruction so that the CPU throws the breakpoint exception when it reaches that line
     - When the user continues the program, the debugger replaces the `int3` instruction with the original
       instruction again and continues the program
+
+- Double fault
+    - similar to programming language's `try...catch(Exception e)`
+    - If double fault is unhandled, a fatal triple fault occurs which can't be caught and most hardware reacts
+      with a system reset 
