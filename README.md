@@ -302,3 +302,147 @@
       plow, etc
     - specifies whether to use the default test harness for a test
         - when set to `false`, the test will not use the default test harness provided by rust
+
+    - CPU Exceptions(by CPU interrupts)
+        - Classification
+            - Faults: can be corrected and the program may continue as if nothing happened
+                - Division error
+                - Bound range exceeded
+                - Invalid Opcode
+                - ...
+            - Traps: reported immediately after the execution of the trapping instruction
+                - Debug
+                - Breakpoint
+                - Overflow
+            - Aborts: severe unrecoverable error
+                - Double fault
+        - When an error occurs:
+            - CPU interrupts its current work and immediately calls a specific exception handler function
+        - Most important exceptions
+            - page fault
+                - occurs on illegal memory access
+                - e.g. if the current instruction tries to read from an unmapped page or tries to write to a
+                  read-only age
+            - invalid opcode
+                - occurs when the current instruction is invalid
+            - general protection fault
+                - occurs on various kinds of access violations
+                - e.g. trying to execute privileged instruction in user-level code or writing reserved fields in
+                  configuration registers
+            - double fault
+                - if another exception occurs while calling the exception handler, or when there is no handler
+                  function registered for an exception
+            - triple fault
+                - if an exception occurs while the CPU tries to call the double fault handler function
+                - if we can't catch or handle a triple fault, most processors react by resetting themselves and
+                  rebooting the OS
+        - IDT(Interrupt Descriptor Table)
+            - specifies handler functions for each exception
+        - How exceptions are handled
+            1. Push some registers on the stack, including the instruction pointer and the RFLAGS register
+            2. Read the corresponding entry from the IDT(Interrupt Descriptor Table)
+            3. Check if the entry is present and, if not, raise a double fault
+            4. Disable hardware interrupts if the entry is an interrupt gate
+            5. Load the specified GDT selector in the CS(code segment)
+            6. Jump to the specified handler function
+        - IDT Type
+            - ```rust
+              #[repr(C)]
+              pub struct InterruptDescriptorTable {
+              pub divide_by_zero: Entry<HandlerFunc>,
+              pub debug: Entry<HandlerFunc>,
+              pub non_maskable_interrupt: Entry<HandlerFunc>,
+              pub breakpoint: Entry<HandlerFunc>,
+              pub overflow: Entry<HandlerFunc>,
+              pub bound_range_exceeded: Entry<HandlerFunc>,
+              pub invalid_opcode: Entry<HandlerFunc>,
+              pub device_not_available: Entry<HandlerFunc>,
+              pub double_fault: Entry<HandlerFuncWithErrCode>,
+              pub invalid_tss: Entry<HandlerFuncWithErrCode>,
+              pub segment_not_present: Entry<HandlerFuncWithErrCode>,
+              pub stack_segment_fault: Entry<HandlerFuncWithErrCode>,
+              pub general_protection_fault: Entry<HandlerFuncWithErrCode>,
+              pub page_fault: Entry<PageFaultHandlerFunc>,
+              pub x87_floating_point: Entry<HandlerFunc>,
+              pub alignment_check: Entry<HandlerFuncWithErrCode>,
+              pub machine_check: Entry<HandlerFunc>,
+              pub simd_floating_point: Entry<HandlerFunc>,
+              pub virtualization: Entry<HandlerFunc>,
+              pub security_exception: Entry<HandlerFuncWithErrCode>,
+              // some fields omitted
+          }        
+          // ...
+
+               type HandlerFunc = extern "x86-interrupt" fn(_: InterruptStackFrame);```
+                ```
+
+            - `extern`
+                - defines a function with a foreign calling convention which is often used to communicate with C
+                  code
+            - foreign calling convention
+                - Most foreign code exposes a C ABI, and Rust uses the platform's C calling convention by
+                  default
+                - calling conventions specify the details of a function call
+                    - e.g. specifies where function parameters are placed(e.g. in registers or on the stack) and
+                      how
+                      results are returned
+                    - e.g. x864_64_Linux, the following rules apply for C functions(specified in the System V
+                      ABI)
+                        - the first 6 integer arguments are passed in registers: `rdi`, `rsi`, `rdx`, `rcx`,
+                          `r8`, `r9`
+                        - additional arguments are passed on the stack
+                        - results are returned in `rax` and `rdx`
+        - Preserved and Scratch registers
+            - calling convention divides the registers into 2 parts: preserved / scratch registers
+            - Preserved registers(callee-saved)
+                - Preserved registers must remain unchanged across function calls
+                - A called function(callee) is ONLY ALLOWED to overwrite these registers if it restores their
+                  original value before returning
+                - a common pattern is to save these registers to the stack at the function's beginning and
+                  restore them just before returning
+            - Scratch registers(caller-saved)
+                - called function is allowed to overwrite scratch registers without restrictions
+                - if the caller wants to preserve the value of a scratch register across a function call, it
+                  needs to backup and restore it before the function call(e.g. by pushing it to the stack)
+            - x86_64 example
+                - preserved registers: `rbp`, `rbx`, `rsp`, `r12`, `r13`, `r14`, `r15`
+                - scratch registers: `rax`, `rcx`, `rdx`, `rsi`, `rdi`, `r8`, `r9`, `r10`, `r11`
+        - Exception and registers
+            - Since we don't know when an exception occurs, we can't backup any registers before
+            - We need a calling convention that preserves all registers => `x86-interrupt`
+                - note that this doesn't mean all registers are saved to the stack at function entry. Instead,
+                  the compiler only backs up the registers that are overwritten by the function
+        - Interrupt Stack Frame
+            - How normal function call works
+                1. Caller function calls(`call` instruction) the callee function
+                2. Push return address to the stack
+                3. Callee function get executed
+                4. On return(`ret` instruction), CPU pops the return address and jumps to it
+            - Exceptions and interrupt handlers are different
+                1. Save the old stack pointer: CPU reads the stack pointer(`rsp`) and stack segment(`ss`)
+                   register values and remembers them in an internal buffer
+                2. Aligning the stack pointer: An interrupt can occur at any instruction, so the stack pointer
+                   can have any value. However, some CPU instructions require that the stack pointer be aligned
+                   on a 16-byte boundary, so the CPU performs such an alignment right after the interrupt
+                3. Switching stacks: occurs when the CPU privilege level changes(e.g. when a CPU occurs in user
+                   mode)
+                4. Push the old stack pointer: pushes the `rsp` and `ss` values from step 1 to the stack. This
+                   makes it possible to restore the original stack pointer when returning from an interrupt
+                   handler
+                5. Pushing and updating the `RFLAGS` register: contains various control and status bits. On
+                   interrupt entry, the CPU changes some bits and pushes the old value
+                6. Pushing the instruction pointer: before jumping to the interrupt handler, the CPU pushes the
+                   instruction pointer(`rip`) and the code segment(`cs`). This is comparable to the return
+                   address push of a normal function call
+                7. Pushing an error code: for some specific exceptions, such as page faults, the CPU pushes an
+                   error code
+                8. Invoking the interrupt handler: reads the address and the segment descriptor of the interrupt
+                   handler function from the corresponding field in the IDT. It then invokes this handler by
+                   loading the values into the `rip` and `cs` registers
+
+- Implementing CPU exceptions(breakpoint exception)
+    - Breakpoint exception is commonly used in debuggers
+    - When the user sets a breakpoint, the debugger overwrites the corresponding instruction with the `int3`
+      instruction so that the CPU throws the breakpoint exception when it reaches that line
+    - When the user continues the program, the debugger replaces the `int3` instruction with the original
+      instruction again and continues the program
