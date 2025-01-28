@@ -450,4 +450,31 @@
 - Double fault
     - similar to programming language's `try...catch(Exception e)`
     - If double fault is unhandled, a fatal triple fault occurs which can't be caught and most hardware reacts
-      with a system reset 
+      with a system reset
+    - Double fault exception CAN occur when a second exception occurs during the handling of a prior exception
+      handler
+      - only very specific combinations of exceptions can lead to a double fault 
+- Kernel stack overflow 
+  - when kernel overflows its stack, it hits  the guard page 
+  - guard page 
+    - a special memory page at the bottom of a stack that makes it possible to detect stack overflows
+  - bootloader sets up a guard page for the kernel stack, so a stack overflow causes a page fault 
+
+- Diverging functions
+  - Functions that never return and marked with `-> !`
+    - Different from the `()` type, which has exactly one possible value 
+
+- Switching Stacks 
+  - `x86_64` arch is able to switch to a predefined, known-good stack when an exception occurs
+    - this switch happens at the hardware level, so it can perform before the CPU pushes the exception stack frame 
+  - IST(Interrupt Stack Table)
+    - table of 7 pointers to known-good stacks 
+    - for each exception handler, we can choose a stack from the IST 
+
+- TSS(Task State Segment) 
+  - A special data structure used by the x86 architecture to store information about task 
+    - e.g. state of the CPU registers, stack pointers and segment selectors 
+  - Primarily used for hardware task switching and handling interrupts that require switching to a different task 
+- GDT(Global Descriptor Table) 
+  - A data structure used by the x86 architecture to define the characteristics of the various memory segments used in the system 
+  - Each entry(segment descriptor) specifies the base address, size and access privileges of a segment 
