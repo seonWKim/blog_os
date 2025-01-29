@@ -504,17 +504,25 @@
     - Hardware interrupts occur ASYNCHRONOUSLY
         - completely independent of the executed code and can occur at any time
     - Each controller can be configured through 2 I/O ports
-        - Command port: used to send commands to PIC 
-        - Data port: used to send or receive data from PIC 
+        - Command port: used to send commands to PIC
+        - Data port: used to send or receive data from PIC
 - EOI(End of Interrupt) signal
     - This signal tells the controller that the interrupt was processed and that the system is ready to receive
       the next interrupt
     - With no EOI, PIC thinks we're still busy processing the first timer interrupt and waits patiently for the
-      EOI signal before sending the next one 
+      EOI signal before sending the next one
 - PIT(Programmable Interval Timer)
-  - The hardware timer we are using 
-  - It's possible to configure the interval between 2 interrupts 
+    - The hardware timer we are using
+    - It's possible to configure the interval between 2 interrupts
+- Timer interrupts 
+  - essential for OS because they provide a way to periodically interrupt the running process and let the kernel regain control 
+    - implement multi process etc 
 
-- `hlt` instruction 
-  - Halts the CPU until the next interrupt arrives 
-  - 
+- `hlt` instruction
+    - Halts the CPU until the next interrupt arrives
+
+- scancode
+    - a numeric code that represents a specific key on a keyboard
+    - when key is pressed/released, the keyboard hardware sends a scancode to the computer to indicate which key
+      was involved
+    - used at the low level to detect key presses and releases 
