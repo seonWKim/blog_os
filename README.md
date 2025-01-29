@@ -492,17 +492,26 @@
            LDT(Local Descriptor Table)
     - Not used these days, instead modern systems use a flat memory model with paging for memory management,
       which simplifies memory access and provides better support for features like virtual memory and memory
-      protection 
+      protection
 
-- Interrupts 
-  - Provides a way to notify the CPU from attached hardware devices(kernel doesn't have to poll) 
-  - Connecting all hardware devices directly to CPU isn't possible 
-    - Instead, a separate interrupt controller aggregates the interrupts from all devices and then notifies the CPU 
-  - Interrupt controllers are programmable 
-    - Priority and etc 
-  - Hardware interrupts occur ASYNCHRONOUSLY
-    - completely independent of the executed code and can occur at any time 
-  - Each controller can be configured through 2 I/O ports
-    - Command port 
-    - Data port 
-  - 
+- Interrupts
+    - Provides a way to notify the CPU from attached hardware devices(kernel doesn't have to poll)
+    - Connecting all hardware devices directly to CPU isn't possible
+        - Instead, a separate interrupt controller aggregates the interrupts from all devices and then notifies
+          the CPU
+    - Interrupt controllers are programmable
+        - Priority and etc
+    - Hardware interrupts occur ASYNCHRONOUSLY
+        - completely independent of the executed code and can occur at any time
+    - Each controller can be configured through 2 I/O ports
+        - Command port: used to send commands to PIC 
+        - Data port: used to send or receive data from PIC 
+- EOI(End of Interrupt) signal
+    - This signal tells the controller that the interrupt was processed and that the system is ready to receive
+      the next interrupt
+    - With no EOI, PIC thinks we're still busy processing the first timer interrupt and waits patiently for the
+      EOI signal before sending the next one 
+- PIT(Programmable Interval Timer)
+  - The hardware timer we are using 
+  - It's possible to configure the interval between 2 interrupts 
+- 
