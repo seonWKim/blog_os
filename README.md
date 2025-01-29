@@ -493,4 +493,16 @@
     - Not used these days, instead modern systems use a flat memory model with paging for memory management,
       which simplifies memory access and provides better support for features like virtual memory and memory
       protection 
-    - 
+
+- Interrupts 
+  - Provides a way to notify the CPU from attached hardware devices(kernel doesn't have to poll) 
+  - Connecting all hardware devices directly to CPU isn't possible 
+    - Instead, a separate interrupt controller aggregates the interrupts from all devices and then notifies the CPU 
+  - Interrupt controllers are programmable 
+    - Priority and etc 
+  - Hardware interrupts occur ASYNCHRONOUSLY
+    - completely independent of the executed code and can occur at any time 
+  - Each controller can be configured through 2 I/O ports
+    - Command port 
+    - Data port 
+  - 
