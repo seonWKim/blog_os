@@ -514,4 +514,7 @@
 - PIT(Programmable Interval Timer)
   - The hardware timer we are using 
   - It's possible to configure the interval between 2 interrupts 
-- 
+
+- `hlt` instruction 
+  - Halts the CPU until the next interrupt arrives 
+  - 
