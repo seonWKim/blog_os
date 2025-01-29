@@ -18,6 +18,7 @@ lazy_static! {
                 .set_stack_index(gdt::DOUBLE_FAULT_IST_INDEX); // new
         }
         idt[InterruptIndex::Timer.as_usize()].set_handler_fn(timer_interrupt_handler);
+        idt[InterruptIndex::Keyboard.as_usize()].set_handler_fn(keyboard_interrupt_handler);
 
         idt
     };
@@ -38,9 +39,7 @@ extern "x86-interrupt" fn double_fault_handler(
     panic!("EXCEPTION: DOUBLE FAULT\n{:#?}", stack_frame);
 }
 
-extern "x86-interrupt" fn timer_interrupt_handler(
-    _stack_frame: InterruptStackFrame
-) {
+extern "x86-interrupt" fn timer_interrupt_handler(_stack_frame: InterruptStackFrame) {
     print!(".");
 
     unsafe {
@@ -49,11 +48,28 @@ extern "x86-interrupt" fn timer_interrupt_handler(
     }
 }
 
+extern "x86-interrupt" fn keyboard_interrupt_handler(_stack_frame: InterruptStackFrame) {
+    use x86_64::instructions::port::Port;
+
+    // Read data port of the PS/2 controller,  which is the I/O port with number 0x60
+    let mut port = Port::new(0x60);
+
+    // scancode represents the key press/release
+    let scancode: u8 = unsafe { port.read() };
+    print!("{}", scancode);
+
+    unsafe {
+        PICS.lock()
+            .notify_end_of_interrupt(InterruptIndex::Keyboard.as_u8());
+    }
+}
+
 #[derive(Debug, Clone, Copy)]
 #[repr(u8)]
 pub enum InterruptIndex {
     // timer uses line 0 of the PIC(Primary Interrupt Controller)
-    Timer = PIC_1_OFFSET
+    Timer = PIC_1_OFFSET,
+    Keyboard,
 }
 
 impl InterruptIndex {
