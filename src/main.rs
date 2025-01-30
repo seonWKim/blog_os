@@ -6,18 +6,17 @@
 
 use blog_os::println;
 use core::panic::PanicInfo;
+use bootloader::{BootInfo, entry_point};
 use x86_64::registers::control::Cr3;
 
-#[no_mangle]
-pub extern "C" fn _start() -> ! {
+entry_point!(kernel_main);
+
+fn kernel_main(boot_info: &'static BootInfo) -> ! {
     println!("Hello World{}", "!");
 
     blog_os::init();
     let (level_4_page_table, _) = Cr3::read();
-    println!(
-        "Level 4 page table at: {:?}",
-        level_4_page_table.start_address()
-    );
+    println!("boot info: {:?}", boot_info);
     #[cfg(test)]
     test_main();
 

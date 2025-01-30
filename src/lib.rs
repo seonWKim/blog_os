@@ -13,6 +13,7 @@ pub mod vga_buffer;
 use core::panic::PanicInfo;
 use x86_64::instructions::hlt;
 
+
 pub trait Testable {
     fn run(&self) -> ();
 }
@@ -60,14 +61,6 @@ pub fn exit_qemu(exit_code: QemuExitCode) {
 }
 
 #[cfg(test)]
-#[no_mangle]
-pub extern "C" fn _start() -> ! {
-    init();
-    test_main();
-    hlt_loop();
-}
-
-#[cfg(test)]
 #[panic_handler]
 fn panic(info: &PanicInfo) -> ! {
     test_panic_handler(info)
@@ -82,6 +75,20 @@ pub fn init() {
 
 pub fn hlt_loop() -> ! {
     loop {
-        x86_64::instructions::hlt();
+        hlt();
     }
+}
+
+
+#[cfg(test)]
+use bootloader::{entry_point, BootInfo};
+
+#[cfg(test)]
+entry_point!(test_kernel_main);
+
+#[cfg(test)]
+fn test_kernel_main(boot_info: &'static BootInfo) -> ! {
+    init();
+    test_main();
+    hlt_loop();
 }
