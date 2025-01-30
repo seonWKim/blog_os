@@ -599,6 +599,36 @@
         - map the page tables recursively
         - by using recursive page tables, we effectively reserve a part of the virtual address space and map all
           current and future page table frames to that space
-        - CPU assumes that every entry in the level 4 table POINTS TO THE level 3 table 
-          - so in recursive page tables, CPU will treat level 4 table as level 3 table(when recursive pages are found)
-          - 
+        - CPU assumes that every entry in the level 4 table POINTS TO THE level 3 table
+            - so in recursive page tables, CPU will treat level 4 table as level 3 table(when recursive pages
+              are found)
+        - Now we can access physical frames of specific level(`RRR` is the recursive index entry)
+            - Page: `0o_SSSSSS_AAA_BBB_CCC_DDD_EEEE`
+            - level 1 entry: `0o_SSSSSS_RRR_AAA_BBB_CCC_DDDD`
+            - level 2 entry: `0o_SSSSSS_RRR_RRR_AAA_BBB_CCCC`
+            - level 3 entry: `0o_SSSSSS_RRR_RRR_RRR_AAA_BBBB`
+            - level 4 entry: `0o_SSSSSS_RRR_RRR_RRR_RRR_AAAA`
+    - Bootloader support
+        - Bootloader has access to the page tables, so it can create any mappings that we need
+        - `bootloader` crate has the following features
+            - `map_physical_memory`
+                - maps the complete physical memory somewhere into the virtual address space
+                - the kernel has access to all physical memory and can follow the
+                  `Map the Complete Physical Memory` approach
+                - platform-independent, more powerful(allows access to non-page-table-frames)
+            - `recursive_page_table`:
+                - the bootloader maps an entry of the level 4 page table recursively
+                - allows the kernel to access the page tables using recursive page tables methodology
+
+
+- Cargo features
+    - defined in the `[feature]` table in `Cargo.toml`
+    - each feature specifies an array of other features or optional dependencies that it enables
+    - by default, all features are DISABLED unless explicitly enabled
+        - this can be changed by specifying the `default` feature - `default` features are enabled when the
+          package is built 
+    - dependency features 
+      - `serde = { version = "xxx", features = ["xxx"] }`
+        - features of dependencies can be enabled within the dependency declaration
+        - `features` key indicates which features to enable 
+      - 
