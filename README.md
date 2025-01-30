@@ -529,43 +529,76 @@
     - used at the low level to detect key presses and releases
 
 - Memory protection
-  - Segmentation
-    - Situation back then was that CPU only used 16-bit addresses, which limited the amount of
-    addressable memory to 64KiB
-    - To make more than 64 KiB accessible, additional segment registers were introduced, each containing
-    an offset address
-    - CPU automatically added this offset on each memory access
-    - Protection mode was later added
-    - the segment descriptor contain an index into a local or global descriptor table, which
-    contains(in addition to an offset address), the segment size and access permissions
-    - Virtual Memory
-      - Instead of directly accessing the storage device, a translation step is performed first 
-      - virtual address -> translation -> physical address 
-        - physical address is always unique 
-        - 2 different virtual addresses might point to the same physical address 
-      - But (external) fragmentation occurs .... 
-        - this is the reason why segmentation is no longer used often 
-  - Paging 
-    - Provides both the virtual and physical memory space into small, fixed-sized blocks(pages) 
-      - blocks of the physical address spaces are called frames 
-    - contiguous virtual memory can be mapped to non-contiguous physical memory
-    - But still, internal fragmentation occurs e.g. when process needs 101 bytes of memory when page size is 50 bytes 
-      - but does not require defragmentation and makes the amount of fragmentation predictable 
-    - Page tables 
-      - segmentation uses an individual segment selector register for each active memory region, but this isn't possible in paging 
-        - paging uses page tables instead 
-      - every program has its own page table 
-        - a pointer to the current active table is stored in a special CPU register(`CR3` for `x86`) 
-          - the job of the OS is to load this register with the pointer to the correct page table before running each program instance 
-        - on each memory access, the CPU reads the table pointer from the register and looks up the mapped frame
-          - entirely done in the hardware side 
-          - to speed up translation, special hardwares are used 
-      - Multi-level page tables 
-        - to reduce wasted memory by unused entries 
-        - it can dramatically reduce the number of entries(but still, it can have unused entries)
-        - higher level permissions will restrict lower level page's permission as well 
-      - TLB 
-        - multilevel paging is expensive because each translation requires N memory accesses 
-        - TLB caches last few translations 
-        - kernel must manually update the TLB whenever it modifies the page table 
-        - 
+    - Segmentation
+        - Situation back then was that CPU only used 16-bit addresses, which limited the amount of
+          addressable memory to 64KiB
+        - To make more than 64 KiB accessible, additional segment registers were introduced, each containing
+          an offset address
+        - CPU automatically added this offset on each memory access
+        - Protection mode was later added
+        - the segment descriptor contain an index into a local or global descriptor table, which
+          contains(in addition to an offset address), the segment size and access permissions
+        - Virtual Memory
+            - Instead of directly accessing the storage device, a translation step is performed first
+            - virtual address -> translation -> physical address
+                - physical address is always unique
+                - 2 different virtual addresses might point to the same physical address
+            - But (external) fragmentation occurs ....
+                - this is the reason why segmentation is no longer used often
+    - Paging
+        - Provides both the virtual and physical memory space into small, fixed-sized blocks(pages)
+            - blocks of the physical address spaces are called frames
+        - contiguous virtual memory can be mapped to non-contiguous physical memory
+        - But still, internal fragmentation occurs e.g. when process needs 101 bytes of memory when page size is
+          50 bytes
+            - but does not require defragmentation and makes the amount of fragmentation predictable
+        - Page tables
+            - segmentation uses an individual segment selector register for each active memory region, but this
+              isn't possible in paging
+                - paging uses page tables instead
+            - every program has its own page table
+                - a pointer to the current active table is stored in a special CPU register(`CR3` for `x86`)
+                    - the job of the OS is to load this register with the pointer to the correct page table
+                      before running each program instance
+                - on each memory access, the CPU reads the table pointer from the register and looks up the
+                  mapped frame
+                    - entirely done in the hardware side
+                    - to speed up translation, special hardwares are used
+            - Multi-level page tables
+                - to reduce wasted memory by unused entries
+                - it can dramatically reduce the number of entries(but still, it can have unused entries)
+                - higher level permissions will restrict lower level page's permission as well
+            - TLB
+                - multilevel paging is expensive because each translation requires N memory accesses
+                - TLB caches last few translations
+                - kernel must manually update the TLB whenever it modifies the page table
+
+- Implement page tables
+    - Identity mapping
+        - Identity map virtual pages to physical pages
+            - the physical addresses of page tables are also valid virtual addresses so that we can easily
+              access the page tables of all levels starting from the CR3 register
+        - The downside is that it's hard to find contiguous virtual memory address space
+    - Map at a fixed offset
+        - Use a separate memory region for page table mappings
+            - e.g. Using `10 TiB ~` virtual address space to map directly to physical memory
+        - Only possible when the virtual address space is much larger than the physical memory space
+        - Downside is that we need to create a new mapping whenever we create a new page table
+    - Map the complete physical memory
+        - allows kernel to access arbitrary physical memory, including page table frames of other address spaces
+        - virtual memory space that are mapped to physical memory space no longer contains unmapped pages
+        - downside is that additional page tables are needed for storing the mapping of the physical memory
+    - Huge pages
+        - size of 2MiB for the mapping, instead of the default 4KiB pages
+        - 32 GiB of physical memory only requires 132 KiB for page tables
+        - Huge pages are also more cache efficient since they use fewer entries in the TLB
+    - Temporary mapping
+        - Mapping the page table frames only temporarily (when we need to access them)
+    - Recursive page tables
+        - requires no additional page tables at all
+        - map the page tables recursively
+        - by using recursive page tables, we effectively reserve a part of the virtual address space and map all
+          current and future page table frames to that space
+        - CPU assumes that every entry in the level 4 table POINTS TO THE level 3 table 
+          - so in recursive page tables, CPU will treat level 4 table as level 3 table(when recursive pages are found)
+          - 
